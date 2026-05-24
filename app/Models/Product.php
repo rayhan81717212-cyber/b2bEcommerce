@@ -10,6 +10,7 @@ class Product extends Model
 
    protected $fillable = [
         'name',
+        'user_id',
         'category_id',
         'brand_id',
         'short_description',
@@ -19,11 +20,22 @@ class Product extends Model
         'stock_quantity',
         'status',
         'photo',
+        'is_active'
     ];
 
 
     public function gallery()
     {
         return $this->hasMany(ProductGallery::class, 'product_id', 'id');
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(Categories::class, 'category_id');
+    }
+
+    public function stockLogs()
+    {
+        return $this->hasMany(StockLogs::class);
     }
 }

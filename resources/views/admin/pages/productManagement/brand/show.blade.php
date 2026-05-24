@@ -7,7 +7,7 @@
     
     <h4 class="fw-bold py-3 mb-4">
       <span class="text-muted fw-light">Brand </span>
-      <span class="text-warning"> / Details</span>
+      <span class="text-dark"> / Details</span>
     </h4>
 
     <div class="row">
@@ -17,7 +17,7 @@
             
             <div class="d-flex justify-content-between align-items-center mb-3">
               <h3>Brand Details</h3>
-              <a href="{{ route('brand.index') }}" class="btn btn-warning btn-sm">Back</a>
+              <a href="{{ route('brand.index') }}" class="btn btn-dark btn-sm">Back</a>
             </div>
 
             <div class="single-info-details">

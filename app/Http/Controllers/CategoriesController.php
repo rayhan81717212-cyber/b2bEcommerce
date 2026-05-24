@@ -15,13 +15,18 @@ class CategoriesController extends Controller
      */
     public function index()
     {
-        $categories = Categories::from('categories as c')
-                                ->select('c.*')
-                                ->orderBy('c.name', 'asc')
-                                ->paginate(15);
+        $query = Categories::from('categories as c')
+            ->select('c.*', 'u.first_name', 'u.last_name')
+            ->leftJoin('users as u', 'c.user_id', '=', 'u.id')
+            ->orderBy('c.name', 'asc');
+            
+        if (auth()->user()->role_id == 2) {
+            $query->where('c.user_id', auth()->id());
+        }
 
-        // dd($categories);
-        return view('admin.pages.productManagement.categories.index' , compact('categories'));
+        $categories = $query->paginate(15);
+
+        return view('admin.pages.productManagement.categories.index', compact('categories'));
     }
 
     // public function show($id){
@@ -43,7 +48,9 @@ class CategoriesController extends Controller
      */
     public function store(Request $request)
     {
+        $user_id = auth()->user()->id;
         $categories = Categories::create([
+            'user_id' => $user_id,
             'name'=> $request->name,
             'status'=>$request->status,
         ]);

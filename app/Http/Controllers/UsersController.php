@@ -16,14 +16,54 @@ class UsersController extends Controller
      */
     public function index()
     {
+        
         $user = User::from('users as u')
-                ->select('u.id','u.first_name', 'u.last_name', 'u.email', 'u.role_id', 'u.status', 'u.phone', 'u.photo', 'r.name as role')
-                ->join('roles as r', 'u.role_id', '=', "r.id")
-                ->orderByRaw("FIELD(role, 'Admin', 'Vendor', 'Editor', 'Customer')")
+                ->select('u.id','u.first_name', 'u.last_name', 'u.email', 'u.role_id', 'u.vendor_status', 'u.phone', 'u.photo', 'r.name as role', 'v.mobile_number', 'v.shop_name')
+                ->leftJoin('roles as r', 'u.role_id', '=', "r.id")
+                ->leftJoin('vendors as v', 'u.id', '=', 'v.user_id')
+                ->whereIn('u.role_id', [1, 2])
+                ->where('u.vendor_status', 1)
+                ->orderByRaw("FIELD(role, 'Admin', 'Vendor')")
+                ->paginate(10);
+
+        return view('admin.pages.userManage.user.index', compact('user'));
+    }
+    public function pendingVendors()
+    {
+        
+        $user = User::from('users as u')
+                ->select('u.id','u.first_name', 'u.last_name', 'u.email', 'u.role_id', 'u.vendor_status', 'u.phone',  'u.photo', 'r.name as role', 'v.mobile_number', 'v.shop_name')
+                ->leftJoin('roles as r', 'u.role_id', '=', "r.id")
+                ->leftJoin('vendors as v', 'u.id', '=', 'v.user_id')
+                ->where('u.role_id',  2)
+                ->where('u.vendor_status', 0)
+                ->orderByRaw("FIELD(role, 'Vendor')")
                 ->paginate(10);
 
         // dd($user);
-        return view('admin.pages.userManage.user.index', compact('user'));
+        return view('admin.pages.userManage.user.pendingUsers', compact('user'));
+    }
+    public function customerDataGet()
+    {
+        
+        $user = User::from('users as u')
+                ->select('u.id','u.first_name', 'u.last_name', 'u.email', 'u.role_id', 'u.status', 'u.phone', 'u.photo', 'r.name as role')
+                ->join('roles as r', 'u.role_id', '=', "r.id")
+                ->whereIn('u.role_id', [4])
+                ->paginate(10);
+
+        return view('admin.pages.userManage.user.customers', compact('user'));
+    }
+
+    // approved vendors
+    public function approvedVendors($id)
+    {
+        $users = User::findOrFail($id);
+
+        $users->vendor_status = 1;
+        $users->save();
+
+        return redirect()->route('user.index')->with('success', "Vendors Approved Successfully!");
     }
 
      /**
@@ -81,6 +121,7 @@ class UsersController extends Controller
             'role_id'=> $request->role_id,
             'status'=> $request->status,
             'photo'=> $photo ?? null,
+            'vendor_status'=> 1,
 
         ]);
         return redirect()->route("user.index")->with("success", "User Add Successfully!");

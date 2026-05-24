@@ -1,7 +1,12 @@
 @include('admin.layout.headerLink')
 
 <!-- Menu -->
-@include('admin.layout.sideber')
+@if (auth()->user()->role_id == 1)
+    @include('admin.layout.sideberAdmin')
+@elseif (auth()->user()->role_id == 2)
+    @include('admin.layout.sideberVendor')
+
+@endif
 <!-- / Menu -->
 
 <!-- Layout container -->

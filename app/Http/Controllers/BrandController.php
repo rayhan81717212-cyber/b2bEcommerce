@@ -9,11 +9,26 @@ use Illuminate\Support\Facades\Storage;
 class BrandController extends Controller
 {
     
-    public function index(){
+    public function index()
+    {
+        $query = Brand::from('brand as b')
+            ->select(
+                'b.id',
+                'b.name',
+                'b.logo',
+                'b.description',
+                'u.first_name',
+                'u.last_name'
+            )
+            ->leftJoin('users as u', 'b.user_id', '=', 'u.id')
+            ->orderBy('b.name', 'asc');
+            
+        if (auth()->user()->role_id == 2) {
+            $query->where('b.user_id', auth()->id());
+        }
 
-       $brand = Brand::select("id", 'name', 'logo', 'description')
-       ->orderBy('name', 'asc')
-        ->paginate(10);
+        $brand = $query->paginate(10);
+
         return view("admin.pages.productManagement.brand.index", compact('brand'));
     }
 
@@ -45,7 +60,9 @@ class BrandController extends Controller
         'photo' => 'nullable|image|mimes:jpeg,jpg,png,webp|max:2048',
     ]);
 
+        $user_id = auth()->user()->id;
         $brand = Brand::create([
+            'user_id' => $user_id,
             'name' => $request->name,
             'description' => $request->description,
             'logo' => $photo,

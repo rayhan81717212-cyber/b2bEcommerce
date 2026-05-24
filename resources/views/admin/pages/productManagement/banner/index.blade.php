@@ -5,8 +5,8 @@
     <div class="mx-md-4">
         <div class="container-fluid p-md-5 flex-grow-1 container-p-y">
             <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Banner /</span> <span
-                    class="text-warning">Manage</span></h4>
-            <a href="{{ route('banner.create') }}" class="btn btn-warning my-3">Add Banner</a>
+                    class="text-dark">Manage</span></h4>
+            <a href="{{ route('banner.create') }}" class="btn btn-dark my-3">Add Banner</a>
             <div class="row">
                 <div class="col-lg-12 mb-4 order-0">
                     <div class="card p-4">

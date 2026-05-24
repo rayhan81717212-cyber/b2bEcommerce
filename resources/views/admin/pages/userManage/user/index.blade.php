@@ -7,7 +7,7 @@
         <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">User /</span> Manage</h4>
         <div class="row">
             <div class="col-lg-12 mb-4 order-0">
-                <a href="{{ route('user.create') }}" class="btn btn-warning mb-3"> Add User</a>
+                <a href="{{ route('user.create') }}" class="btn btn-dark mb-3"> Add User</a>
                 <div class="mb-3">
                     @if (session('success') == 'User Delete Successfully!')
                     <div class="alert alert-danger mb-0" role="alert">
@@ -25,15 +25,15 @@
                         <div class="table-responsive text-nowrap">
                             <table class="table table-bordered text-center">
                                 <thead>
-                                    <tr>
-                                        <th class="bg-warning text-white"><i class="fas fa-hashtag"></i> ID</th>
-                                        <th class="bg-warning text-white"><i class="fas fa-user"></i> Name</th>
-                                        <th class="bg-warning text-white"><i class="fas fa-envelope"></i> Email</th>
-                                        <th class="bg-warning text-white"><i class="fas fa-phone"></i> Phone</th>
-                                        <th class="bg-warning text-white"><i class="fas fa-user-tag"></i> Role</th>
-                                        <th class="bg-warning text-white"><i class="fas fa-toggle-on"></i> Status</th>
-                                        <th class="bg-warning text-white"><i class="fas fa-image"></i> Photo</th>
-                                        <th class="bg-warning text-white"><i class="fas fa-cogs"></i> Actions</th>
+                                    <tr class="bg-dark ">
+                                        <th class="text-center text-white"><i class="fas fa-hashtag"></i> ID</th>
+                                        <th class="text-center text-white"><i class="fas fa-user"></i> Name</th>
+                                        <th class="text-center text-white"><i class="fas fa-envelope"></i> Email</th>
+                                        <th class="text-center text-white"><i class="fas fa-phone"></i> Phone</th>
+                                        <th class="text-center text-white"><i class="fas fa-building"></i> Shop Name</th>
+                                        <th class="text-center text-white"><i class="fas fa-toggle-on"></i> Status</th>
+                                        <th class="text-center text-white"><i class="fas fa-image"></i> Photo</th>
+                                        <th class="text-center text-white "><i class="fas fa-cogs"></i> Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -42,11 +42,17 @@
                                             <td>{{ $index + 1 }}</td>
                                             <td>{{ $item->first_name }} {{ $item->last_name }}</td>
                                             <td>{{ $item->email }}</td>
-                                            <td>{{ $item->phone }}</td>
-                                            <td>{{ $item->role ?? '' }}</td>
                                             <td>
-                                                <span class="badge {{ $item->status == 'Active' ? 'bg-primary' : 'bg-danger' }}">
-                                                    {{ $item->status }}
+                                                @if ($item->phone)
+                                                        {{ $item->phone }}
+                                                    @else
+                                                        {{ $item->mobile_number }}
+                                                    @endif
+                                            </td>
+                                            <td>{{ $item->shop_name ?? 'N/A' }}</td>
+                                            <td>
+                                                <span class="badge {{ $item->vendor_status == '1' ? 'bg-primary' : 'bg-danger' }}">
+                                                    {{ $item->vendor_status == 0 ? 'Pending' : 'Approved' }}
                                                 </span>
                                             </td>
                                             <td>
@@ -62,7 +68,7 @@
 
                                                      <form action="{{ route('user.edit', $item->id) }}" method="GET">
                                                         @csrf
-                                                        <button class="btn btn-warning me-2 btn-sm">Update</button>
+                                                        <button class="btn btn-dark me-2 btn-sm">Update</button>
                                                     </form>
                                                     <form action="{{ route('user.destroy', $item->id) }}" method="POST">
                                                         @csrf

@@ -23,19 +23,75 @@ class ProductController extends Controller
         // dd($products);
         return response()->json($products);
     }
-     public function index(){
-        $product = Product::from('products as p')
-        ->select('p.*', 'b.name as brand_name', 'c.name as category_name')
-        ->join('brand as b', 'p.brand_id', '=', 'b.id')
-        ->join('categories as c', 'p.category_id', '=', 'c.id')
-        ->orderBy('p.id', 'desc')
-        ->paginate(10);
+    public function index()
+    {
+        $user = auth()->user();
 
-        // dd($product);
+        $query = Product::from('products as p')
+            ->select(
+                'p.*',
+                'b.name as brand_name',
+                'c.name as category_name',
+                'u.first_name',
+                'u.last_name'
+            )
+            ->leftJoin('brand as b', 'p.brand_id', '=', 'b.id')
+            ->leftJoin('categories as c', 'p.category_id', '=', 'c.id')
+            ->leftJoin('users as u', 'p.user_id', '=', 'u.id')
+            ->where('is_active', 1)
+            ->orderBy('p.id', 'desc');
+
+        
+        if ($user->role_id == 2) {
+            $query->where('p.user_id', $user->id);
+        }
+
+    
+        $product = $query->paginate(10);
+
         return view('admin.pages.productManagement.product.index', compact('product'));
-
     }
-     
+
+     // pending Product show all 
+    public function pendingProduct(){
+        $user = auth()->user();
+
+        $query = Product::from('products as p')
+            ->select(
+                'p.*',
+                'b.name as brand_name',
+                'c.name as category_name',
+                'u.first_name',
+                'u.last_name'
+            )
+            ->leftJoin('brand as b', 'p.brand_id', '=', 'b.id')
+            ->leftJoin('categories as c', 'p.category_id', '=', 'c.id')
+            ->leftJoin('users as u', 'p.user_id', '=', 'u.id')
+            ->where('is_active', 0)
+            ->orderBy('p.id', 'desc');
+
+        
+        if ($user->role_id == 2) {
+            $query->where('p.user_id', $user->id);
+        }
+
+    
+        $product = $query->paginate(10);
+
+        return view('admin.pages.productManagement.product.penddingProduct', compact('product'));
+    }
+
+// pending producut aproved
+    public function productApproved($id)
+    {
+        $product = Product::findOrFail($id);
+
+        $product->is_Active = 1;
+        $product->save();
+
+        return redirect()->route('product.index')->with('success', "Product Approved Successfully!");
+    }
+
     public function show($id){
         $productId = Product::from('products as p')
         ->select('p.*', 'b.name as brand_name', 'c.name as category_name')
@@ -50,9 +106,10 @@ class ProductController extends Controller
 
 
     public function create(){
-          $brand = Brand::orderBy("name", 'asc')->get(); 
-          $categories = Categories::orderBy('name', 'asc')->get();
-
+         
+            $brand = Brand::orderBy('name', 'asc')->get();
+            $categories = Categories::orderBy('name', 'asc')->get();
+    
 
         //   dd($brand, $categories);
           return view('admin.pages.productManagement.product.create', compact('brand', "categories"));      
@@ -73,7 +130,12 @@ class ProductController extends Controller
             'photo' => [ 'mimes:png,jpg,jpeg,webp','image', 'max:1000'],
         ]);
 
+        $user_id = auth()->user()->id;
+        $isActive = auth()->user()->role_id == 1 ? 1 : 0;
+
+      
         $product = Product::create([
+            'user_id'=> $user_id,
             'name' => $request->name,
             'category_id' => $request->category_id,
             'brand_id' => $request->brand_id,
@@ -84,10 +146,11 @@ class ProductController extends Controller
             'stock_quantity' => $request->stock_quantity,
             'status' => $request->status,
             'photo' =>$photo,
+            'is_active'=>$isActive
             
         ]);
         // dd($product);
-        return redirect()->route('product.index')->with('success', "Product Add Successfully!");
+        return redirect()->route('product-pending')->with('success', "Product Add Successfully!");
 
     }
    

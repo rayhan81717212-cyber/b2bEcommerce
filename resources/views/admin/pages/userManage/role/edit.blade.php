@@ -14,7 +14,7 @@
                             @csrf
                             @method('PATCH') 
                             <input type="text" name="name" value="{{ $role->name }}" class="form-control">
-                            <button class="btn btn-warning mt-2">Update</button>
+                            <button class="btn btn-dark mt-2">Update</button>
                         </form>
                     </div>
                 </div>

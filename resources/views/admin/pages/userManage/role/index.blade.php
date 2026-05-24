@@ -7,7 +7,7 @@
         <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Role /</span> Manage</h4>
         <div class="row">
             <div class="col-lg-12 mb-4 order-0">
-                <a href="{{ route('role.create') }}" class="btn btn-warning mb-3"> Add Role</a>
+                <a href="{{ route('role.create') }}" class="btn btn-dark mb-3"> Add Role</a>
                 <div class="mb-3">
                     @if (session('success') == 'Role Delete Successfully!')
                     <div class="alert alert-danger mb-0" role="alert">
@@ -26,9 +26,9 @@
                             <table class="table table-bordered text-center">
                                 <thead>
                                     <tr>
-                                        <th class="bg-warning text-white"> <i class="fas fa-hashtag"></i> Id</th>
-                                        <th class="bg-warning text-white"> <i class="fas fa-user"></i> Name</th>
-                                        <th class="bg-warning text-white"> <i class="fas fa-cogs"></i> Actions</th>
+                                        <th class="bg-dark text-white"> <i class="fas fa-hashtag"></i> Id</th>
+                                        <th class="bg-dark text-white"> <i class="fas fa-user"></i> Name</th>
+                                        <th class="bg-dark text-white"> <i class="fas fa-cogs"></i> Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -40,17 +40,17 @@
                                                 <div class="d-flex justify-content-center">
                                                     <form action="{{ route('role.show', $item->id) }}" method="GET">
                                                         @csrf
-                                                        <button class="btn btn-primary btn-sm me-2">Details</button>
+                                                        <button class="btn btn-primary btn-sm me-2"><i class="fa fa-eye"></i></button>
                                                     </form>
                                                     <form action="{{ route('role.edit', $item->id) }}" method="GET">
                                                         @csrf
                                                         @method('PATCH')
-                                                        <button class="btn btn-warning btn-sm me-2">Upadate</button>
+                                                        <button class="btn btn-dark btn-sm me-2"><i class="fa fa-pen"></i></button>
                                                     </form>
                                                     <form action="{{ route('role.destroy', $item->id) }}" method="POST">
                                                         @csrf
                                                         @method('DELETE')
-                                                        <button class="btn btn-danger btn-sm">Delete</button>
+                                                        <button class="btn btn-danger btn-sm"><i class="fa fa-trash"></i></button>
                                                     </form>
 
                                                 </div>

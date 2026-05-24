@@ -1,4 +1,3 @@
-
 /* create index css */
 
 .nav-pills .nav-link {
@@ -7,11 +6,13 @@
     background-color: #f3f3f3;
     color: #555;
 }
+
 .nav-pills .nav-link.active {
     background-color: #ffc107 !important;
     color: #000 !important;
     font-weight: 600;
 }
+
 .step-done {
     font-weight: bold;
 }
@@ -21,6 +22,7 @@
     max-width: 250px;
     margin: auto;
 }
+
 .filepond--drop-label {
     background: #f8f9fa;
     border: 2px dashed #ffc107;
@@ -29,127 +31,164 @@
     width: 100%;
     height: 200px !important;
 }
+
 .filepond--drop-label:hover {
     background: #fff8e1;
     border-color: #ffca28;
 }
+
 .filepond--image-preview-wrapper {
     border-radius: 10px;
 }
 
 /* login CSS Start*/
- .login-bg {
-      background: url("/assets/img/logo/login.jpg") no-repeat center center fixed !important;
-      background-size: cover;
-      font-family: 'Public Sans', sans-serif;
+
+
+.form-control {
+    border: none;
+    border-bottom: 2px solid #f0f0f0;
+    border-radius: 0;
+    padding: 5px 0;
+    margin-bottom: 10px;
+    transition: border-color 0.3s;
+}
+
+.form-control:focus {
+    box-shadow: none;
+    border-color: 2px solid #f0f0f0;;
+}
+
+.btn-login {
+    background-color: #1b1b1b;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 12px;
+    font-weight: 600;
+    margin-top: 10px;
+    box-shadow: 0 4px 15px rgba(105, 108, 255, 0.3);
+}
+
+.btn-login:hover {
+    background-color: #1b1b1b;
+    color: #fff;
+}
+
+.extra-links {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    margin-bottom: 25px;
+}
+
+.app-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 30px;
+}
+
+.app-btn {
+    background: #000;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    font-size: 12px;
+    text-decoration: none;
+}
+
+@media (max-width: 900px) {
+    .auth-illustration {
+        display: none;
     }
 
-    .authentication-wrapper {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      backdrop-filter: blur(3.5px);
+    .auth-container {
+        max-width: 450px;
     }
+}
 
-    .card-area {
-      background: rgba(255, 255, 255, 0.15); /* semi-transparent white */
-      backdrop-filter: blur(15px);
-      border-radius: 20px;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-    }
-
-    .card-area-body-login {
-      color: #fff;
-    }
-
-    .form-labelf,
-    .text-bodyf,
-    .form-check-labelf,
-    .text-center-login {
-      color: #fff !important;
-    }
-
-    input.form-control {
-      background-color: rgba(253, 6, 6, 0) ;
-    }
-
-    .btn-primary-login {
-        background: linear-gradient(rgba(253, 0, 0, 0.562)) !important;
-    }
-
-    .input-group-text{
-        background-color: transparent !important;
-    }
 /* login CSS end*/
 
 /* invoice page css start */
- .full-body {
-        font-family: 'Arial';
-        margin: 0;
-        padding: 0;
-        background: #f4f4f4;
-    }
-    .invoice-box {
-        background: white;
-        max-width: 900px;
-        margin: 40px auto;
-        padding: 40px;
-        border: 1px solid #eee;
-        box-shadow: 0 0 10px rgba(0,0,0,0.15);
-    }
-    .invoice-header {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 40px;
-    }
-    .invoice-header h2 {
-        margin: 0;
-        font-size: 28px;
-        font-weight: bold;
-        color: #333;
-    }
-    .company-details {
-        text-align: right;
-    }
-    .company-details p {
-        margin: 0;
-        color: #666;
-    }
-    .customer-info, .invoice-details {
-        margin-bottom: 20px;
-    }
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 10px;
-    }
-    table th {
-        background: #f8f8f8;
-        padding: 12px;
-        border: 1px solid #ddd;
-        text-align: left;
-    }
-    table td {
-        padding: 12px;
-        border: 1px solid #ddd;
-    }
-    .total-box {
-        margin-top: 20px;
-        float: right;
-        width: 300px;
-    }
-    .total-box table td {
-        border: none;
-        padding: 6px 0;
-    }
-    .grand-total {
-        font-size: 18px;
-        font-weight: bold;
-        border-top: 2px solid #333 !important;
-        margin-top: 10px;
-    }
+.full-body {
+    font-family: 'Arial';
+    margin: 0;
+    padding: 0;
+    background: #f4f4f4;
+}
+
+.invoice-box {
+    /* background: white; */
+    max-width: 900px;
+    height: auto;
+    margin: 40px auto;
+    padding: 40px;
+    /* border: 1px solid #eee;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.15); */
+}
+
+.invoice-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 40px;
+}
+
+.invoice-header h2 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: bold;
+    color: #333;
+}
+
+.company-details {
+    text-align: right;
+}
+
+.company-details p {
+    margin: 0;
+    color: #666;
+}
+
+.customer-info,
+.invoice-details {
+    margin-bottom: 20px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+table th {
+    background: #f8f8f8;
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+table td {
+    padding: 12px;
+    border: 1px solid #ddd;
+}
+
+.total-box {
+    margin-top: 20px;
+    float: right;
+    width: 300px;
+}
+
+.total-box table td {
+    border: none;
+    padding: 6px 0;
+}
+
+.grand-total {
+    font-size: 18px;
+    font-weight: bold;
+    border-top: 2px solid #333 !important;
+    margin-top: 10px;
+}
+
 /* invoice page css end */
-
-

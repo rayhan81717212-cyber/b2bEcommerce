@@ -8,7 +8,7 @@
         <div class="container-fluid p-md-5 flex-grow-1 container-p-y">
             <h4 class="fw-bold py-3 mb-4">
                 <span class="text-muted fw-light">Product</span>
-                <span class="text-warning"> / Update</span>
+                <span class="text-dark"> / Update</span>
             </h4>
             <div class="card p-4">
     <div class="card-body">
@@ -43,7 +43,7 @@
                     
                 </div>
 
-                <button type="button" class="btn btn-warning next-step">Next</button>
+                <button type="button" class="btn btn-dark next-step">Next</button>
             </div>
 
             <!-- Step 2: Photo -->
@@ -63,7 +63,7 @@
                     </div>
                 </div>
                 <button type="button" class="btn btn-secondary prev-step">Previous</button>
-                <button type="submit" class="btn btn-warning">Submit</button>
+                <button type="submit" class="btn btn-dark">Submit</button>
             </div>
 
         </form>

@@ -7,7 +7,7 @@
     
     <h4 class="fw-bold py-3 mb-4">
       <span class="text-muted fw-light">Users </span>
-      <span class="text-warning"> / Details</span>
+      <span class="text-dark"> / Details</span>
     </h4>
 
     <div class="row">
@@ -17,7 +17,7 @@
             
             <div class="d-flex justify-content-between align-items-center mb-3">
               <h3>User Details</h3>
-              <a href="{{ route('user.index') }}" class="btn btn-warning btn-sm">Back</a>
+              <a href="{{ route('user.index') }}" class="btn btn-dark btn-sm">Back</a>
             </div>
 
             <div class="single-info-details">
@@ -31,7 +31,7 @@
                        class="rounded img-fluid shadow" 
                        width="250" height="300">
                   @else 
-                    <img src="https://placehold.co/600x400" alt="">
+                    <img src="https://placehold.co/600x400" alt="" width="250" height="300">
                   @endif
                 </div>
 

@@ -21,7 +21,7 @@
                                             <span class="text-danger" >{{$message}}</span>
                                         @enderror
                                     </div>
-                                    <button class="btn btn-warning mt-3">Submit</button>
+                                    <button class="btn btn-dark mt-3">Submit</button>
                                 </div>
                             </div>
                         </form>

@@ -6,12 +6,12 @@
     <div class="container-fluid p-md-5 flex-grow-1 container-p-y">
         <h4 class="fw-bold py-3 mb-4">
             <span class="text-muted fw-light">Product Gallery</span>
-            <span class="text-warning"> / Create</span>
+            <span class="text-dark"> / Create</span>
         </h4>
 
         <div class="card p-4">
             <div class="card-body">
-                <h3 class="mb-4 font-weight-bold text-warning">Create Product Gallery</h3>
+                <h3 class="mb-4 font-weight-bold text-dark">Create Product Gallery</h3>
 
                 <form action="{{ route('productgallery.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
@@ -38,7 +38,7 @@
                         <input type="file" name="photo[]" id="photo" class="form-control" multiple>
                     </div>
 
-                    <button type="submit" class="btn btn-warning">Save</button>
+                    <button type="submit" class="btn btn-dark">Save</button>
                 </form>
             </div>
         </div>

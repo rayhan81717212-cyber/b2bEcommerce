@@ -16,4 +16,9 @@ class Payment extends Model
         "grand_total",
         "status"
     ];
+
+    public function order()
+    {
+        return $this->belongsTo(Order::class);
+    }
 }

@@ -3,217 +3,282 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Product;
 
 use App\Models\Order;
-use App\Models\OrderAddress;
 use App\Models\OrderItem;
-use App\Models\Payment;
-
+use App\Models\Product;
+use App\Models\StockLogs;
 
 class OrderController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function checkoutPage()
-    {
-        $cart = session('cart', []);
-
-
-        $total = 0;
-        foreach ($cart as $item) {
-            $total += $item['price'] * $item['quantity'];
-        }
-
-        $shipping_fee = $total >= 1000 ? 0 : 60;
-        $grand_total = $total + $shipping_fee;
-        // dd($cart, $total);
-        return view('site.pages.product-details.checkOut.checkout', compact('cart', 'total'));
-    }
-
-   
-    public function placeOrder(Request $request)
-    {
-        // Validate
-        $request->validate([
-            'first_name' => 'required',
-            'last_name' => 'required',
-            'phone' => 'required',
-            'email' => 'required|email',
-            'country' => 'required',
-            'city' => 'required',
-            'address' => 'required',
-        ]);
-
-        // Get Cart
-        $cart = session('cart', []);
-        if (empty($cart)) {
-            return back()->with('error', 'Your cart is empty.');
-        }
-
-        // Calculate Total
-        $total = 0;
-        foreach ($cart as $item) {
-            $total += $item['price'] * $item['quantity'];
-        }
-
-        $shipping_fee = $request->shipping_fee ?? 0; 
-        $grand_total = $total + $shipping_fee;
-
-        // dd($shipping_fee);
-        $request->validate([
-        'payment_method' => 'required',
-        ]);
-
-
-        // Create Order
-        $order = Order::create([
-            'user_id' => auth()->id() ?? null,
-            'order_number' => 'ORD-' . strtoupper(uniqid()),
-            'amount' => $total,
-            'shipping_fee' => $shipping_fee,
-            'grand_total' => $grand_total,
-            'payment_method' => $request->payment_method,
-            'payment_status' => 'pending',
-            'status' => "pending",
-        ]);
-
-        // Save Billing Address
-        OrderAddress::create([
-            'order_id' => $order->id,
-            'first_name' => $request->first_name,
-            'last_name' => $request->last_name,
-            'email' => $request->email,
-            'phone' => $request->phone,
-            'country' => $request->country,
-            'city' => $request->city,
-            'address' => $request->address,
-        ]);
-
-        // Save Payment
-        Payment::create([
-            'order_id' => $order->id,
-            'payment_method' => $request->payment_method,
-            'amount' => $total,
-            'shipping_fee' => $shipping_fee,
-            'grand_total' => $grand_total,
-            'status' => "pending"
-        ]);
-
-
-
-        // Save Order Items
-        foreach ($cart as $productId => $item) {
-            OrderItem::create([
-                'order_id' => $order->id,
-                'product_id' => $productId,
-                'quantity' => $item['quantity'],
-                'price' => $item['price'],
-            ]);
-        }
-
-        // Clear cart
-        session()->forget('cart');
-        
-        return redirect()->route('order.success', ['id' => $order->id]);
-    }
-
-    public function success($orderId)
-    {
-        
-        $order = Order::from('orders as o')
-                ->select('o.*', 'oa.first_name', 'oa.last_name', 'oa.phone', 'oa.email', 'oa.address', 'oa.city')
-                ->join('order_addresses as oa', 'oa.order_id', '=', 'o.id')
-                ->where('o.id', $orderId)
-                ->first();
-
-        // dd($order);
-        return view('site.pages.product-details.checkOut.success', compact('order'));
-    }
 
     // admin Order show
-    public function index(){
+    public function index()
+    {
+        $query = Order::from('orders as o')
+            ->select(
+                'o.created_at',
+                'o.shipping_fee',
+                'o.payment_method',
+                'oi.id',
+                'oi.status',
+                'oi.price',
+                'oi.quantity',
+                'oi.order_number',
+                'p.name as productName',
+                'p.photo as productPhoto',
+                'u.first_name as firstName',
+                'u.last_name as lastName',
+            )
+            ->leftJoin('order_items as oi', 'o.id', '=', 'oi.order_id')
+            ->leftJoin('products as p', 'p.id', '=', 'oi.product_id')
+            ->leftJoin('users as u', 'u.id', '=', 'o.user_id')
+            ->orderBy('o.id', 'desc');
 
-        $order = Order::from('orders as o')
-                        ->select(
-                            'o.*',
-                            'oa.first_name',
-                            'oa.last_name',
-                            'oa.phone',
-                            'oa.email',
-                            'oa.address'
-                        )
-                        ->join('order_addresses as oa', 'oa.order_id', '=', 'o.id')
-                        ->orderBy('o.id', "desc")
-                        ->paginate(10);
-      
-        // dd($order);
-        return view('admin.pages.orderManagement.allOrder',  compact('order'));
-     
+        
+        if (auth()->user()->role_id == 2) {
+            $query->where('oi.vendor_id', auth()->id());
+        }
+
+
+        $orders = $query->paginate(10);
+        // dd($orders);
+        return view('admin.pages.orderManagement.allOrder', compact('orders'));
     }
     // admin Order clan
     public function cancleOrder(){
 
-        $order = Order::from('orders as o')
-                        ->select(
-                            'o.*',
-                            'oa.first_name',
-                            'oa.last_name',
-                            'oa.phone',
-                            'oa.email',
-                            'oa.address'
-                        )
-                        ->join('order_addresses as oa', 'oa.order_id', '=', 'o.id')
-                        ->orderBy('o.id', "desc")
-                        ->where('o.status', "cancle")
-                        ->paginate(10);
+            $query = Order::from('orders as o')
+                ->select(
+                'o.created_at',
+                'o.shipping_fee',
+                'o.payment_method',
+                'oi.id',
+                'oi.status',
+                'oi.price',
+                'oi.quantity',
+                'oi.order_number',
+                'p.name as productName',
+                'p.photo as productPhoto',
+                'u.first_name as firstName',
+                'u.last_name as lastName',
+            )
+                ->leftJoin('order_items as oi', 'o.id', '=', 'oi.order_id')
+                ->leftJoin('products as p', 'p.id', '=', 'oi.product_id')
+                ->leftJoin('users as u', 'u.id', '=', 'o.user_id')
+                ->where('oi.status', 'cancelled')
+                ->orderBy('o.id', 'desc');
+
+            
+            if (auth()->user()->role_id == 2) {
+                $query->where('oi.vendor_id', auth()->id());
+            }
+
+
+        $orders = $query->paginate(10);
       
         // dd($order);
-        return view('admin.pages.orderManagement.cancleOrder',  compact('order'));
+        return view('admin.pages.orderManagement.cancleOrder',  compact('orders'));
      
     }
     // admin Order pending
     public function pendingOrder(){
 
-        $order = Order::from('orders as o')
-                        ->select(
-                            'o.*',
-                            'oa.first_name',
-                            'oa.last_name',
-                            'oa.phone',
-                            'oa.email',
-                            'oa.address'
-                        )
-                        ->join('order_addresses as oa', 'oa.order_id', '=', 'o.id')
-                        ->orderBy('o.id', "desc")
-                        ->where('o.status', "pending")
-                        ->paginate(10);
-      
+        $query = Order::from('orders as o')
+                ->select(
+                'o.created_at',
+                'o.shipping_fee',
+                'o.payment_method',
+                'oi.id',
+                'oi.status',
+                'oi.price',
+                'oi.quantity',
+                'oi.order_number',
+                'p.name as productName',
+                'p.photo as productPhoto',
+                'u.first_name as firstName',
+                'u.last_name as lastName',
+                )
+                ->leftJoin('order_items as oi', 'o.id', '=', 'oi.order_id')
+                ->leftJoin('products as p', 'p.id', '=', 'oi.product_id')
+                ->leftJoin('users as u', 'u.id', '=', 'o.user_id')
+                ->where('oi.status', 'pending')
+                ->orderBy('o.id', 'desc');
+
+            
+            if (auth()->user()->role_id == 2) {
+                $query->where('oi.vendor_id', auth()->id());
+            }
+
+
+        $orders = $query->paginate(10);
         // dd($order);
-        return view('admin.pages.orderManagement.pendingOrder',  compact('order'));
+        return view('admin.pages.orderManagement.pendingOrder',  compact('orders'));
      
     }
     // admin Order delivery
     public function deliveredOrder(){
 
-        $order = Order::from('orders as o')
-                        ->select(
-                            'o.*',
-                            'oa.first_name',
-                            'oa.last_name',
-                            'oa.phone',
-                            'oa.email',
-                            'oa.address'
-                        )
-                        ->join('order_addresses as oa', 'oa.order_id', '=', 'o.id')
-                        ->orderBy('o.id', "desc")
-                        ->where('o.status', "delevered")
-                        ->paginate(10);
+        $query = Order::from('orders as o')
+                ->select(
+                    'o.created_at',
+                    'o.shipping_fee',
+                    'o.payment_method',
+                    'oi.id',
+                    'oi.status',
+                    'oi.price',
+                    'oi.quantity',
+                    'oi.order_number',
+                    'p.name as productName',
+                    'p.photo as productPhoto',
+                    'u.first_name as firstName',
+                    'u.last_name as lastName',
+                )
+                ->leftJoin('order_items as oi', 'o.id', '=', 'oi.order_id')
+                ->leftJoin('products as p', 'p.id', '=', 'oi.product_id')
+                ->leftJoin('users as u', 'u.id', '=', 'o.user_id')
+                ->where('oi.status', 'delivered')
+                ->orderBy('o.id', 'desc');
+
+            
+            if (auth()->user()->role_id == 2) {
+                $query->where('oi.vendor_id', auth()->id());
+            }
+
+
+        $orders = $query->paginate(10);
       
         // dd($order);
-        return view('admin.pages.orderManagement.deliveredOrder',  compact('order'));
+        return view('admin.pages.orderManagement.deliveredOrder',  compact('orders'));
      
+    }
+    // confirmed Order delivery
+    public function confirmedOrder(){
+
+        $query = Order::from('orders as o')
+                ->select(
+                    'o.created_at',
+                    'o.shipping_fee',
+                    'o.payment_method',
+                    'oi.id',
+                    'oi.status',
+                    'oi.price',
+                    'oi.quantity',
+                    'oi.order_number',
+                    'p.name as productName',
+                    'p.photo as productPhoto',
+                    'u.first_name as firstName',
+                    'u.last_name as lastName',
+                )
+                ->leftJoin('order_items as oi', 'o.id', '=', 'oi.order_id')
+                ->leftJoin('products as p', 'p.id', '=', 'oi.product_id')
+                ->leftJoin('users as u', 'u.id', '=', 'o.user_id')
+                ->where('oi.status', 'confirmed')
+                ->orderBy('o.id', 'desc');
+
+            
+            if (auth()->user()->role_id == 2) {
+                $query->where('oi.vendor_id', auth()->id());
+            }
+
+
+        $orders = $query->paginate(10);
+      
+        // dd($order);
+        return view('admin.pages.orderManagement.confirmedOrder',  compact('orders'));
+    }
+    // processing route
+    public function processingOrder(){
+
+        $query = Order::from('orders as o')
+                ->select(
+                    'o.created_at',
+                    'o.shipping_fee',
+                    'o.payment_method',
+                    'oi.id',
+                    'oi.status',
+                    'oi.price',
+                    'oi.quantity',
+                    'oi.order_number',
+                    'p.name as productName',
+                    'p.photo as productPhoto',
+                    'u.first_name as firstName',
+                    'u.last_name as lastName',
+                )
+                ->leftJoin('order_items as oi', 'o.id', '=', 'oi.order_id')
+                ->leftJoin('products as p', 'p.id', '=', 'oi.product_id')
+                ->leftJoin('users as u', 'u.id', '=', 'o.user_id')
+                ->where('oi.status', 'processing')
+                ->orderBy('o.id', 'desc');
+
+            
+            if (auth()->user()->role_id == 2) {
+                $query->where('oi.vendor_id', auth()->id());
+            }
+
+
+        $orders = $query->paginate(10);
+      
+        // dd($order);
+        return view('admin.pages.orderManagement.processingOrder',  compact('orders'));
+     
+    }
+
+    public function updateOrderStatus(Request $request, $id)
+    {
+        $item = OrderItem::findOrFail($id);
+
+        $oldStatus = $item->status;
+        $newStatus = $request->status;
+
+        $item->status = $newStatus;
+        $item->save();
+
+        $product = Product::find($item->product_id);
+
+        /* stock Out */
+        if ($oldStatus != 'confirmed' && $newStatus == 'confirmed') {
+
+            if ($product->stock_quantity < $item->quantity) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Stock not available'
+                ]);
+            }
+
+            
+            $product->stock_quantity -= $item->quantity;
+            $product->save();
+
+            // log item
+            StockLogs::create([
+                'product_id' => $product->id,
+                'quantity' => $item->quantity,
+                'type' => 'out',
+                'note' => 'Order Confirmed (Item ID: '.$item->id.')'
+            ]);
+        }
+
+        /*cancelled product return stock*/
+        if ($oldStatus == 'confirmed' && in_array($newStatus, ['cancelled','returned'])) {
+
+           
+            $product->stock_quantity += $item->quantity;
+            $product->save();
+
+            // log item
+            StockLogs::create([
+                'product_id' => $product->id,
+                'quantity' => $item->quantity,
+                'type' => 'in',
+                'note' => 'Order Cancel/Return (Item ID: '.$item->id.')'
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Status updated with inventory'
+        ]);
     }
 
 }

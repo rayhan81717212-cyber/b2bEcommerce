@@ -1,0 +1,141 @@
+:root {
+    --primary-color: #2e2e2e;
+    --bg-purple: #ffffff;
+    --input-border: #f0f0f0;
+}
+
+.registerbody {
+    background-color: var(--bg-purple);
+    min-height: 100vh;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Public Sans', sans-serif;
+    padding: 20px;
+}
+
+.register-wrapper {
+    background: #ffffff;
+    border-radius: 30px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+    width: 100%;
+    max-width: 1100px;
+    display: flex;
+    min-height: 750px;
+}
+
+.register-illustration {
+    flex: 1.2;
+    background-color: #f8f7ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+}
+
+.register-illustration img {
+    max-width: 100%;
+    height: auto;
+}
+
+.register-form-section {
+    flex: 1;
+    padding: 50px 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    max-height: 850px;
+    overflow-y: auto;
+}
+
+.brand-title h2 {
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 5px;
+    font-size: 2rem;
+}
+
+.brand-title p {
+    color: #888;
+    margin-bottom: 30px;
+    font-size: 1rem;
+}
+
+.custom-group {
+    margin-bottom: 1.2rem;
+}
+
+.custom-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 2px;
+    display: block;
+}
+
+.custom-input,
+.custom-select {
+    border: none;
+    border-bottom: 2px solid var(--input-border);
+    border-radius: 0;
+    padding: 10px 0;
+    width: 100%;
+    transition: all 0.3s;
+    font-size: 0.95rem;
+    background-color: transparent;
+}
+
+.custom-input:focus,
+.custom-select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: none;
+}
+
+.btn-submit {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 14px;
+    font-weight: 600;
+    width: 100%;
+    margin-top: 20px;
+    cursor: pointer;
+    box-shadow: 0 5px 15px rgba(105, 108, 255, 0.3);
+    transition: 0.3s;
+}
+
+.btn-submit:hover {
+    background-color: #242424;
+    transform: translateY(-2px);
+}
+
+.login-link {
+    text-align: center;
+    margin-top: 25px;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.login-link a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 700;
+}
+
+@media (max-width: 992px) {
+    .register-illustration {
+        display: none;
+    }
+
+    .register-wrapper {
+        max-width: 500px;
+    }
+
+    .register-form-section {
+        padding: 40px 30px;
+    }
+}

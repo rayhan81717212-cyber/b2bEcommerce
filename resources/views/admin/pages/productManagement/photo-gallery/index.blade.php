@@ -5,8 +5,8 @@
     <div class="mx-md-4">
         <div class="container-fluid p-md-5 flex-grow-1 container-p-y">
             <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Product Gallery /</span> <span
-                    class="text-warning">Manage</span></h4>
-            <a href="{{ route('productgallery.create') }}" class="btn btn-warning my-3">Add Product</a>
+                    class="text-dark">Manage</span></h4>
+            <a href="{{ route('productgallery.create') }}" class="btn btn-dark my-3">Add Product</a>
             
             <div class="row">
                 <div class="col-lg-12 mb-4 order-0">
@@ -25,9 +25,13 @@
                             <div class="table-responsive ">
                                 <table class="table table-bordered text-center">
                                     <thead>
-                                        <tr class="bg-warning ">
+                                        <tr class="bg-dark ">
                                             <th class="text-white align-middle"><i class="fas fa-hashtag me-1"></i>Id</th>
                                             <th class="text-white align-middle"><i class="fas fa-box me-1"></i>Product Name</th>
+                                            @if (auth()->user()->role_id == 1)
+                                                <th class="text-white align-middle text-center"><i
+                                                    class="fas fa-user me-1"></i>Vendor Name</th>
+                                            @endif
                                             <th class="text-white align-middle"><i class="fas fa-image me-1"></i>photo</th>
                                             <th class="text-white align-middle"><i class="fas fa-cogs me-1"></i>Action</th>
                                         </tr>
@@ -37,14 +41,17 @@
                                             <tr>
                                                 <td class="m-0 p-0">{{$index + 1}}</td>
                                                 <td class="m-0 p-0 text-wrap w-50">{{$item->product}}</td>
+                                                @if (auth()->user()->role_id == 1)
+                                                    <td>{{ trim(($item->first_name ?? '') . ' ' . ($item->last_name ?? '')) ?: 'NA' }}</td>
+                                                @endif
                                                 <td class="m-0 p-0">
                                                     <a data-fancybox="gallery" href="{{ asset('storage/' . $item->photo) }}">
                                                         <img src="{{ asset('storage/'.$item->photo) }}" alt="Product Messing" width="100">
                                                     </a>
                                                 </td>
                                                 <td class="m-0 p-0">
-                                                    <button class="btn btn-sm btn-primary me-2">Update</button>
-                                                    <button class="btn btn-sm btn-danger">Delete</button>
+                                                    <button class="btn btn-sm btn-primary me-2"><i class="fa fa-pen"></i></button>
+                                                    <button class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></button>
                                         
                                             </tr>
                                         @endforeach

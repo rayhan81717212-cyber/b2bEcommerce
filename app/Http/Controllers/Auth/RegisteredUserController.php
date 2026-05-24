@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Roles;
+use App\Models\Vendor;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -32,21 +33,64 @@ class RegisteredUserController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'first_name' => ['required', 'string', 'max:255'],
+            'last_name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email'],
+            'password' => ['required', 'string', 'min:4', 'confirmed'],
         ]);
 
         $user = User::create([
-            'name' => $request->name,
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'role_id' => 4, 
+            'statis' => "Active", 
         ]);
-
-        event(new Registered($user));
 
         Auth::login($user);
 
-        return redirect(route('dashboard', absolute: false));
+        return redirect('/customers/dashboard');
+    }
+
+
+    // vendor register
+    public function vendorRegisterPage(){
+        return view('auth.vendor_register');
+    }
+    public function vendorStore(Request $request)
+    {
+        $request->validate([
+            'first_name' => ['required', 'string', 'max:255'],
+            'last_name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email'],
+            'password' => ['required', 'string', 'min:4', 'confirmed'],
+            'shop_name' => ['required'],
+            'address' => ['required'],
+            'mobile_number' => ['required'],
+        ]);
+
+        // User Create
+        $user = User::create([
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'role_id' => 2,
+            'statis' => "Active",
+            'vendor_status' => 0,
+        ]);
+
+        // Vendor Create 
+        Vendor::create([
+            'user_id' => $user->id,
+            'shop_name' => $request->shop_name,
+            'address'   => $request->address,
+            'mobile_number'=> $request->mobile_number,
+        ]);
+
+        // Auth::login($user);
+
+        return redirect('/login');
     }
 }
